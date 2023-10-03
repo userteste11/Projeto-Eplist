@@ -1,0 +1,26 @@
+###Mudar Local Host Para a sua Maquina
+###get listar epi
+GET http://localhost:5008/EpiList/EPI/listar
+
+###GET EPI ID
+GET http://localhost:5008/EpiList/EPI/1
+###POST DE EPI
+POST http://localhost:5008/EpiList/EPI/cadastrar
+Content-Type: application/json
+
+{
+  "descricao": "string",
+  "c_A": 0,
+  "quantidade": 0
+}
+###PUT AUTALIZAR EPI
+PUT http://localhost:5008/EpiList/EPI/Atualizar/1
+Content-Type: application/json
+
+{
+  "descricao": "capacete",
+  "c_A": 0,
+  "quantidade": 0
+}
+### DELETAR EPI
+DELETE http://localhost:5008/EpiList/EPI/Deletar/1
