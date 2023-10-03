@@ -1,5 +1,5 @@
 
-using API.Models;
+using EPIlist.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Namespace.Data;

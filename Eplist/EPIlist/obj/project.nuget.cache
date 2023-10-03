@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "u73rJ+T2PUa31nUeN81iYNwwMKtVL4/p/0f7Kw4du7KXV5eAmEwuGjK+MzNOwkLFh7omM20+6i8cj/CR28feJw==",
+  "dgSpecHash": "3ON/u/4CYMys30N+OFIom9xI5x4CiokS6Hz7us+wv8U1w1MwhrjqyPhlgkfOREbdi+malqEOhzK6uYhu1mulIQ==",
   "success": true,
-  "projectFilePath": "c:\\Users\\Pichau\\Desktop\\Nova pasta\\Eplist\\EPIlist\\EPIlist.csproj",
+  "projectFilePath": "c:\\Users\\Pichau\\Desktop\\Projeto-Eplist\\Eplist\\EPIlist\\EPIlist.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Pichau\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\Pichau\\.nuget\\packages\\microsoft.data.sqlite.core\\6.0.21\\microsoft.data.sqlite.core.6.0.21.nupkg.sha512",

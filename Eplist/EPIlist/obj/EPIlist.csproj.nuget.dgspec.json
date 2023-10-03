@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\Pichau\\Desktop\\Nova pasta\\Eplist\\EPIlist\\EPIlist.csproj": {}
+    "c:\\Users\\Pichau\\Desktop\\Projeto-Eplist\\Eplist\\EPIlist\\EPIlist.csproj": {}
   },
   "projects": {
-    "c:\\Users\\Pichau\\Desktop\\Nova pasta\\Eplist\\EPIlist\\EPIlist.csproj": {
+    "c:\\Users\\Pichau\\Desktop\\Projeto-Eplist\\Eplist\\EPIlist\\EPIlist.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\Pichau\\Desktop\\Nova pasta\\Eplist\\EPIlist\\EPIlist.csproj",
+        "projectUniqueName": "c:\\Users\\Pichau\\Desktop\\Projeto-Eplist\\Eplist\\EPIlist\\EPIlist.csproj",
         "projectName": "EPIlist",
-        "projectPath": "c:\\Users\\Pichau\\Desktop\\Nova pasta\\Eplist\\EPIlist\\EPIlist.csproj",
+        "projectPath": "c:\\Users\\Pichau\\Desktop\\Projeto-Eplist\\Eplist\\EPIlist\\EPIlist.csproj",
         "packagesPath": "C:\\Users\\Pichau\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\Pichau\\Desktop\\Nova pasta\\Eplist\\EPIlist\\obj\\",
+        "outputPath": "c:\\Users\\Pichau\\Desktop\\Projeto-Eplist\\Eplist\\EPIlist\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Pichau\\AppData\\Roaming\\NuGet\\NuGet.Config"
