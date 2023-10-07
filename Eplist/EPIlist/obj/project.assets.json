@@ -1692,19 +1692,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\alexa\\.nuget\\packages\\": {}
+    "C:\\Users\\user\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\alexa\\OneDrive\\Área de Trabalho\\Eplist\\Projeto-Eplist\\Eplist\\EPIlist\\EPIlist.csproj",
+      "projectUniqueName": "C:\\Users\\user\\OneDrive\\Área de Trabalho\\Nova pasta (2)\\Projeto-Eplist\\Eplist\\EPIlist\\EPIlist.csproj",
       "projectName": "EPIlist",
-      "projectPath": "C:\\Users\\alexa\\OneDrive\\Área de Trabalho\\Eplist\\Projeto-Eplist\\Eplist\\EPIlist\\EPIlist.csproj",
-      "packagesPath": "C:\\Users\\alexa\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\alexa\\OneDrive\\Área de Trabalho\\Eplist\\Projeto-Eplist\\Eplist\\EPIlist\\obj\\",
+      "projectPath": "C:\\Users\\user\\OneDrive\\Área de Trabalho\\Nova pasta (2)\\Projeto-Eplist\\Eplist\\EPIlist\\EPIlist.csproj",
+      "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\user\\OneDrive\\Área de Trabalho\\Nova pasta (2)\\Projeto-Eplist\\Eplist\\EPIlist\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\alexa\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
@@ -1762,7 +1762,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.414\\RuntimeIdentifierGraph.json"
       }
     }
   }
