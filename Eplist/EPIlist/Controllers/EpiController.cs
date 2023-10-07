@@ -9,7 +9,7 @@ public class EpiController : ControllerBase
 {
     private readonly AppDataContext _ctx;
     public EpiController(AppDataContext ctx) => _ctx = ctx;
-    
+
     //GET: Epilist/EPI/listar
     [HttpGet]
     [Route("listar")]
@@ -17,14 +17,14 @@ public class EpiController : ControllerBase
     {
         try
         {
-           List<Epi> Epis = _ctx.Epis.ToList();
-            return Epis.Count==0 ? NotFound() : Ok(Epis); 
+            List<Epi> Epis = _ctx.Epis.ToList();
+            return Epis.Count == 0 ? NotFound() : Ok(Epis);
         }
         catch (Exception e)
         {
             return BadRequest(e.Message);
         }
-        
+
     }
 
     // GET: Epilist/Epi/id
@@ -84,13 +84,14 @@ public class EpiController : ControllerBase
     {
         Epi epiExistente = _ctx.Epis.FirstOrDefault(e => e.EpiID == id);
 
-            if (epiExistente == null)
-            {
-                return NotFound("EPI não encontrado.");
-            }
-
-            _ctx.Epis.Remove(epiExistente);
-            _ctx.SaveChanges();
-            return NoContent();
+        if (epiExistente == null)
+        {
+            return NotFound("EPI não encontrado.");
         }
+
+        _ctx.Epis.Remove(epiExistente);
+        _ctx.SaveChanges();
+        return NoContent();
+    }
 }
+

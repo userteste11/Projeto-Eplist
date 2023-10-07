@@ -1,102 +1,270 @@
 using EPIlist.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Namespace.Data;
 
 namespace EPIlist.Controllers;
-
 [ApiController]
-[Route("Eplist/Usuario")]
+[Route("EpiList/Usuario")]
 public class UsuarioController : ControllerBase
 {
-
     private readonly AppDataContext _ctx;
-
     public UsuarioController(AppDataContext ctx) => _ctx = ctx;
-
+    //Todas as entidades devem conter a inserção, remoção, alteração e listagem das informações em banco de dados;
+    //GET: Epilist/Usuario/listar
     [HttpGet]
     [Route("listar")]
-
-    public IActionResult listar(){
+    public IActionResult Listar()
+    {
         try
         {
-            List<Usuario> usuarios = _ctx.Usuarios.ToList();
-            return usuarios.Count ==0 ? NotFound() : Ok(usuarios);
+            var usuariosComEpis = _ctx.Usuarios
+            .Include(u => u.UsuariosEpis)
+            .ThenInclude(ue => ue.Epi)
+            .ToList();
+            var resultado = usuariosComEpis.Select(u => new
+            {
+                UsuarioID = u.UsuarioID,
+                Nome = u.Nome,
+                Email = u.Email,
+                Telefone = u.Telefone,
+                Senha = u.Senha,
+                CPF = u.CPF,
+                Cod = u.Cargo,
+                Equipe = u.EquipeID,
+                Epis = u.UsuariosEpis.Select(ue => new
+                {
+                    EpiID = ue.Epi.EpiID,
+                    Descricao = ue.Epi.Descricao,
+                    C_A = ue.Epi.C_A,
+                    Quantidade = ue.Epi.Quantidade
+                }).ToList()
 
-        }catch(Exception e)
+            }).ToList();
+            return Ok(resultado);
+        }
+        catch (Exception e)
         {
-            return BadRequest(e.Message);
+            return BadRequest(e);
         }
     }
-    
+
+    // GET: Epilist/Usuario/id
     [HttpGet]
     [Route("{id}")]
-
     public IActionResult UsuarioId(int id)
     {
-        Usuario usuario = _ctx.Usuarios.FirstOrDefault(e => e.UsuarioID == id);
-        return usuario == null ? NotFound(""): Ok(usuario);
+        try
+        {
+            Usuario usuario = _ctx.Usuarios.Include(x => x.UsuariosEpis).FirstOrDefault(e => e.UsuarioID == id);
+            if (usuario == null)
+            {
+                return NotFound("Usuário não encontrado.");
+            }
+            var resultado = new
+            {
+                UsuarioID = usuario.UsuarioID,
+                Nome = usuario.Nome,
+                Email = usuario.Email,
+                Telefone = usuario.Telefone,
+                Senha = usuario.Senha,
+                CPF = usuario.CPF,
+                Cod = usuario.Cargo,
+                Equipe = usuario.EquipeID,
+                Epis = usuario.UsuariosEpis.Select(ue => new
+                {
+                    EpiID = ue.Epi.EpiID,
+                    Descricao = ue.Epi.Descricao,
+                    C_A = ue.Epi.C_A,
+                    Quantidade = ue.Epi.Quantidade
+                }).ToList()
+            };
+            return Ok(resultado);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e);
+        }
     }
-
+    //Post: Epilist/Usuario/cadastrar
     [HttpPost]
     [Route("cadastrar")]
-
     public IActionResult Cadastrar([FromBody] Usuario usuario)
     {
         try
         {
+            if (usuario.episId != null && usuario.episId.Any())
+            {
+                List<UsuarioEpi> usuarioEpis = new List<UsuarioEpi>();
+                foreach (var epiId in usuario.episId)
+                {
+                    Epi? epi = _ctx.Epis.Find(epiId);
+                    if (epi == null)
+                    {
+                        return NotFound($"Epi com ID {epiId} não encontrado.");
+                    }
+                    if (epi.Quantidade >= 1)
+                    {
+                        var usuarioEpi = new UsuarioEpi
+                        {
+                            Usuario = usuario,
+                            Epi = epi
+                        };
+                        usuarioEpis.Add(usuarioEpi);
+                        epi.Quantidade = epi.Quantidade - 1;
+                        _ctx.Epis.Update(epi);
+                        _ctx.SaveChanges();
+                    }
+                    else
+                    {
+                        return NotFound($"Epi com ID {epiId} sem estoque.");
+                    }
+                }
+                _ctx.UsuarioEpis.AddRange(usuarioEpis);
+            }
             _ctx.Add(usuario);
             _ctx.SaveChanges();
             return Created("", usuario);
         }
         catch (Exception e)
         {
+            Console.WriteLine(e);
             return BadRequest(e.Message);
         }
-
     }
-
-    [HttpPut]
-    [Route("atualizar/{id}")]
-
-    public IActionResult AtualizarUsuario(int id, [FromBody] Usuario usuarioAtualizado)
-    {
-        if (usuarioAtualizado == null)
-        {
-            return BadRequest("Dados do usuario invalido");
-        }
-
-        Usuario usuario = _ctx.Usuarios.FirstOrDefault(e => e.UsuarioID == id);
-        
-        if(usuario == null)
-        {
-            return NotFound("Usuario não encontrado");
-        }
-
-        usuario.Nome = usuarioAtualizado.Nome;
-        usuario.CPF = usuarioAtualizado.CPF;
-        usuario.Telefone = usuarioAtualizado.Telefone;
-        usuario.Cargo = usuarioAtualizado.Cargo;
-        usuario.Email = usuarioAtualizado.Email;
-
-        _ctx.Update(usuario);
-        _ctx.SaveChanges();
-        return Ok(usuario);
-        
-    }
-
+    //delete: Epilist/usuario/deletar/id
     [HttpDelete]
     [Route("Deletar/{id}")]
-    public IActionResult DeletarUsuario(int id)
+    public IActionResult DeletarEPI(int id)
     {
-        Usuario usuarioExistente = _ctx.Usuarios.FirstOrDefault(e => e.UsuarioID == id);
-
-        if(usuarioExistente == null)
+        var usuario = _ctx.Usuarios.Include(u => u.Equipe).FirstOrDefault(u => u.UsuarioID == id);
+        if (usuario == null)
         {
-            return NotFound("Usuario não encontrado");
+            return NotFound("Usuário não encontrado.");
         }
-
-        _ctx.Usuarios.Remove(usuarioExistente);
+        // Pesquise as equipes em que o usuário líder está alocado
+        var equipesDoLider = _ctx.Equipes.Where(e => e.LiderID == usuario.UsuarioID).ToList();
+        // Remova o usuário da equipe definindo o LiderID como nulo
+        foreach (var equipe in equipesDoLider)
+        {
+            equipe.LiderID = null;
+            equipe.Lider = null;
+        }
+        _ctx.Usuarios.Remove(usuario);
         _ctx.SaveChanges();
         return NoContent();
+    }
+    //adicionar epi
+    [HttpPost]
+    [Route("{id}/AdicionarEPIs")]
+    public IActionResult AdicionarEPIsAoUsuario(int id, [FromBody] List<int> epiIds)
+    {
+        try
+        {
+            epiIds = epiIds.Distinct().ToList();
+            Usuario usuario = _ctx.Usuarios.Include(u => u.UsuariosEpis).FirstOrDefault(u => u.UsuarioID == id);
+            if (usuario == null)
+            {
+                return NotFound("Usuário não encontrado.");
+            }
+            // Verifique se os EPIs existem e estão disponíveis
+            var epis = _ctx.Epis.Where(epi => epiIds.Contains(epi.EpiID) && epi.Quantidade > 0).ToList();
+
+            if (epis.Count != epiIds.Count)
+            {
+                return BadRequest("Alguns dos EPIs selecionados não estão disponíveis.");
+            }
+            foreach (var epiId in epiIds)
+            {
+                // Verifique se o usuário já possui o EPI com base no ID do EPI
+                if (!usuario.UsuariosEpis.Any(ue => ue.EpiID == epiId))
+                {
+                    var epi = epis.FirstOrDefault(e => e.EpiID == epiId);
+                    if (epi != null)
+                    {
+                        usuario.UsuariosEpis.Add(new UsuarioEpi { UsuarioID = usuario.UsuarioID, EpiID = epi.EpiID });
+                        epi.Quantidade--; // Reduza a quantidade disponível do EPI
+                    }
+                }
+            }
+            _ctx.SaveChanges();
+            return Ok("EPIs adicionados com sucesso ao usuário.");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e);
+        }
+    }
+    [HttpDelete]
+    [Route("{id}/RemoverEPIs")]
+    public IActionResult RemoverEPIsDoUsuario(int id, [FromBody] List<int> epiIds)
+    {
+        try
+        {
+            Usuario usuario = _ctx.Usuarios.Include(u => u.UsuariosEpis).FirstOrDefault(u => u.UsuarioID == id);
+            if (usuario == null)
+            {
+                return NotFound("Usuário não encontrado.");
+            }
+            // Verificar se o usuário possui os EPIs a serem removidos
+            var epiIdsParaRemover = usuario.UsuariosEpis
+                .Where(ue => epiIds.Contains(ue.EpiID))
+                .Select(ue => ue.EpiID)
+                .ToList();
+
+            // Remover os EPIs do usuário
+            foreach (var epiId in epiIdsParaRemover)
+            {
+                var usuarioEpiParaRemover = usuario.UsuariosEpis.FirstOrDefault(ue => ue.EpiID == epiId);
+                if (usuarioEpiParaRemover != null)
+                {
+                    usuario.UsuariosEpis.Remove(usuarioEpiParaRemover);
+
+                    // Aumentar a quantidade disponível do EPI
+                    var epi = _ctx.Epis.FirstOrDefault(e => e.EpiID == epiId);
+                    if (epi != null)
+                    {
+                        epi.Quantidade++;
+                    }
+                }
+            }
+            _ctx.SaveChanges();
+            return Ok("EPIs removidos com sucesso do usuário.");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e);
+        }
+    }
+    [HttpPut]
+    [Route("{id}/Atualizar")]
+    public IActionResult AtualizarUsuario(int id, [FromBody] Usuario novoUsuario)
+    {
+        try
+        {
+            Usuario usuarioExistente = _ctx.Usuarios.FirstOrDefault(u => u.UsuarioID == id);
+
+            if (usuarioExistente == null)
+            {
+                return NotFound("Usuário não encontrado.");
+            }
+
+            // Atualizar as informações do usuário com base nos dados fornecidos
+            usuarioExistente.Nome = novoUsuario.Nome;
+            usuarioExistente.Email = novoUsuario.Email;
+            usuarioExistente.Telefone = novoUsuario.Telefone;
+            usuarioExistente.Senha = novoUsuario.Senha;
+            usuarioExistente.CPF = novoUsuario.CPF;
+            usuarioExistente.Cargo = novoUsuario.Cargo;
+            usuarioExistente.EquipeID = novoUsuario.EquipeID;
+
+            _ctx.SaveChanges();
+
+            return Ok("Usuário atualizado com sucesso.");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e);
+        }
     }
 }
